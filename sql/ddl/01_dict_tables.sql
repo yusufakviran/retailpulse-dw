@@ -68,7 +68,7 @@ INSERT INTO dict.d_store_format VALUES
 -- dict.d_product_status
 -- ─────────────────────────────────────────
 CREATE TABLE dict.d_product_status (
-    status_code         VARCHAR(10)     NOT NULL,
+    status_code         VARCHAR(15)     NOT NULL,
     status_name         VARCHAR(40)     NOT NULL,
     is_sellable         BOOLEAN         NOT NULL,
     CONSTRAINT pk_d_product_status PRIMARY KEY (status_code)

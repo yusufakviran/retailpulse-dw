@@ -15,14 +15,16 @@ CREATE TABLE fact.sales_transaction (
     transaction_id          BIGINT          NOT NULL,   -- POS receipt number
     line_number             SMALLINT        NOT NULL,
     -- Foreign Keys (Dimension)
-    date_id                 INT             NOT NULL    REFERENCES dim.date(date_id),
-    store_sk                INT             NOT NULL    REFERENCES dim.store(store_sk),
-    product_sk              INT             NOT NULL    REFERENCES dim.product(product_sk),
-    customer_sk             INT             NOT NULL    DEFAULT -1 REFERENCES dim.customer(customer_sk),
-    employee_sk             INT             REFERENCES dim.employee(employee_sk),
-    campaign_sk             INT             NOT NULL    DEFAULT -1 REFERENCES dim.campaign(campaign_sk),
-    payment_method_id       SMALLINT        REFERENCES dict.d_payment_method(payment_method_id),
-    transaction_type_id     SMALLINT        NOT NULL    REFERENCES dict.d_transaction_type(transaction_type_id),
+    date_id                 INT             NOT NULL,
+    store_sk                INT             NOT NULL,
+    product_sk              INT             NOT NULL,
+    customer_sk             INT             NOT NULL    DEFAULT -1,
+    employee_sk             INT,
+    campaign_sk             INT             NOT NULL    DEFAULT -1,
+    payment_method_id       SMALLINT,
+    transaction_type_id     SMALLINT        NOT NULL,
+    -- NOTE: FK constraints omitted on partitioned table (PostgreSQL limitation)
+    -- Referential integrity enforced at ETL layer
     -- Additive Measures
     quantity                DECIMAL(10,3)   NOT NULL,
     unit_list_price         DECIMAL(12,2)   NOT NULL,
@@ -42,8 +44,8 @@ CREATE TABLE fact.sales_transaction (
     etl_batch_id            BIGINT,
     etl_loaded_at           TIMESTAMP       NOT NULL DEFAULT NOW(),
     source_system           VARCHAR(30)     NOT NULL DEFAULT 'POS',
-    CONSTRAINT pk_fact_sales_tx PRIMARY KEY (sales_tx_sk),
-    CONSTRAINT uq_fact_sales_tx UNIQUE (transaction_id, line_number, source_system)
+    CONSTRAINT pk_fact_sales_tx PRIMARY KEY (sales_tx_sk, date_id),
+    CONSTRAINT uq_fact_sales_tx UNIQUE (transaction_id, line_number, source_system, date_id)
 ) PARTITION BY RANGE (date_id);
 
 -- Monthly partitions (2023-01 to 2025-12)

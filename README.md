@@ -124,7 +124,6 @@ retailpulse-dw/
 ├── docs/
 ├── versions/
 │   └── CHANGELOG.md
-├── CLAUDE.md
 └── README.md
 ```
 
